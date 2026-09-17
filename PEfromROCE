@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adjustable Horizon Multi-Stage P/E Calculator</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --background: #f5f3ff;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-light: #475569;
+            --border: #cbd5e1;
+            --error: #dc2626;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: var(--text);
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin: 0 0 0.25rem 0;
+            color: #312e81;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: #334155;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+        }
+
+        .value-display {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            width: 4.2rem;
+            text-align: right;
+            background: #f1f5f9;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .result-card {
+            background: var(--background);
+            border: 2px dashed #c7d2fe;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        @media (min-width: 640px) {
+            .result-card {
+                grid-column: span 1;
+                grid-row: span 3;
+            }
+        }
+
+        .result-label {
+            font-size: 1.05rem;
+            color: #312e81;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-value {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            line-height: 1;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .note-box {
+            grid-column: 1 / -1;
+            background-color: #f8fafc;
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            color: #334155;
+            border: 1px solid var(--border);
+            border-left-width: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>⏳ Adjustable Horizon P/E Calculator</h1>
+    <div class="subtitle">Dynamic multi-stage DCF valuation modeling the longevity of competitive advantages.</div>
+    
+    <div class="grid">
+        <div class="input-group">
+            <label for="duration">High Growth Duration (Years)</label>
+            <div class="slider-container">
+                <input type="range" id="duration" min="1" max="15" value="5">
+                <span class="value-display" id="duration-val">5 Yrs</span>
+            </div>
+        </div>
+
+        <div class="result-card">
+            <div class="result-label">Implied Horizon P/E</div>
+            <div class="result-value" id="pe-result">--</div>
+        </div>
+
+        <div class="input-group">
+            <label for="roce">Phase 1 ROCE (Capital Efficiency)</label>
+            <div class="slider-container">
+                <input type="range" id="roce" min="10" max="70" value="35">
+                <span class="value-display" id="roce-val">35%</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="growth1">Phase 1 Growth Rate (Hyper Growth)</label>
+            <div class="slider-container">
+                <input type="range" id="growth1" min="5" max="40" value="25">
+                <span class="value-display" id="growth1-val">25%</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="discount">Required Rate of Return (Discount Rate)</label>
+            <div class="slider-container">
+                <input type="range" id="discount" min="8" max="20" value="11">
+                <span class="value-display" id="discount-val">11%</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="growth2">Terminal Growth Rate (Stable Mature)</label>
+            <div class="slider-container">
+                <input type="range" id="growth2" min="2" max="7" value="5">
+                <span class="value-display" id="growth2-val">5%</span>
+            </div>
+        </div>
+
+        <div class="note-box" id="explanation">
+            Processing valuation stages...
+        </div>
+    </div>
+</div>
+
+<script>
+    const durationSlider = document.getElementById('duration');
+    const roceSlider = document.getElementById('roce');
+    const growth1Slider = document.getElementById('growth1');
+    const growth2Slider = document.getElementById('growth2');
+    const discountSlider = document.getElementById('discount');
+
+    const durationVal = document.getElementById('duration-val');
+    const roceVal = document.getElementById('roce-val');
+    const growth1Val = document.getElementById('growth1-val');
+    const growth2Val = document.getElementById('growth2-val');
+    const discountVal = document.getElementById('discount-val');
+
+    const peResult = document.getElementById('pe-result');
+    const explanation = document.getElementById('explanation');
+
+    function calculateFlexibleStagePE() {
+        const years = parseInt(durationSlider.value);
+        const roce = parseFloat(roceSlider.value) / 100;
+        const g1 = parseFloat(growth1Slider.value) / 100;
+        const g2 = parseFloat(growth2Slider.value) / 100;
+        const r = parseFloat(discountSlider.value) / 100;
+
+        durationVal.textContent = durationSlider.value + ' Yrs';
+        roceVal.textContent = roceSlider.value + '%';
+        growth1Val.textContent = growth1Slider.value + '%';
+        growth2Val.textContent = growth2Slider.value + '%';
+        discountVal.textContent = discountSlider.value + '%';
+
+        const rr1 = g1 / roce;
+        const payout1 = 1 - rr1;
+
+        if (rr1 > 1) {
+            peResult.innerHTML = "<span class='error-message'>Capital Trap</span>";
+            explanation.innerHTML = `⚠️ <strong>Invalid Input Combo:</strong> A growth rate of ${growth1Slider.value}% requires more than 100% of profits to be reinvested at an ROCE of ${roceSlider.value}%. Increase ROCE or lower expected growth.`;
+            return;
+        }
+
+        if (g2 >= r) {
+            peResult.innerHTML = "<span class='error-message'>Terminal Error</span>";
+            explanation.innerHTML = `⚠️ <strong>Model Crash:</strong> Terminal growth rate (${growth2Slider.value}%) cannot equal or exceed the discount rate (${discountSlider.value}%) or the business mathematically becomes worth infinity.`;
+            return;
+        }
+
+        const terminalROCE = 0.15; 
+        const rr2 = g2 / terminalROCE;
+        const payout2 = Math.max(0, 1 - rr2);
+
+        let cumulativePresentValue = 0;
+        let currentEarnings = 1.0;
+
+        // Dynamic Stage 1 calculations
+        for (let t = 1; t <= years; t++) {
+            currentEarnings *= (1 + g1);
+            const freeCashFlow = currentEarnings * payout1;
+            cumulativePresentValue += freeCashFlow / Math.pow(1 + r, t);
+        }
+
+        // Terminal value calculation pegged exactly to horizon end
+        const terminalEarningsNextYear = currentEarnings * (1 + g2);
+        const terminalFCFNextYear = terminalEarningsNextYear * payout2;
+        const terminalValueAtHorizonEnd = terminalFCFNextYear / (r - g2);
+        const presentValueTerminal = terminalValueAtHorizonEnd / Math.pow(1 + r, years);
+
+        const totalIntrinsicValue = cumulativePresentValue + presentValueTerminal;
+        const fairPE = totalIntrinsicValue;
+
+        peResult.textContent = fairPE.toFixed(1);
+
+        explanation.innerHTML = `💡 <strong>Horizon Impact:</strong> By specifying a <strong>${years}-year runway</strong> at a compounding <strong>${growth1Slider.value}% growth rate</strong> backed by an efficient <strong>${roceSlider.value}% ROCE</strong>, you can observe how valuation expands exponentially with time. Longer horizons confidently unlock higher entry multiples because cash yields outgrow traditional asset limits.`;
+    }
+
+    [durationSlider, roceSlider, growth1Slider, growth2Slider, discountSlider].forEach(slider => {
+        slider.addEventListener('input', calculateFlexibleStagePE);
+    });
+
+    calculateFlexibleStagePE();
+</script>
+
+</body>
+</html>
